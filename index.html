@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>For My Love 🐱💖</title>
+<style>
+  :root{
+    --pink:#ff82b2;
+    --pink-dark:#ff5b9b;
+    --cream:#fff7f0;
+    --ink:#2d2a32;
+  }
+  html,body{margin:0}
+  body{
+    font-family: ui-rounded, "SF Pro Rounded", "Poppins", system-ui, -apple-system, Arial, sans-serif;
+    background: linear-gradient(180deg, #ffe9f2, #fff7f0);
+    color: var(--ink);
+    min-height:100svh; display:flex; align-items:center; justify-content:center;
+  }
+  .card{
+    width:min(720px, 92vw);
+    background: #fff;
+    border-radius: 24px;
+    box-shadow: 0 12px 30px rgba(0,0,0,.08);
+    overflow:hidden;
+  }
+  header{
+    padding:20px 24px; background:var(--cream); display:flex; gap:12px; align-items:center;
+  }
+  .cat{
+    width:40px; height:40px; border-radius:50%; background:#ffe1ee; display:grid; place-items:center;
+    font-size:22px;
+  }
+  h1{font-size:20px; margin:0}
+  main{padding:26px}
+  .center{display:grid; place-items:center; text-align:center; gap:18px}
+  .btn{
+    background: var(--pink); color:#fff; border:0;
+    padding:14px 22px; border-radius:14px; font-size:16px; cursor:pointer;
+    box-shadow: 0 6px 16px rgba(255,130,178,.35);
+    transition: transform .08s ease, background .2s ease;
+  }
+  .btn:hover{background:var(--pink-dark)}
+  .btn:active{transform: translateY(1px)}
+  .ghost{
+    background:#fff; color:var(--ink); border:2px solid #eee; box-shadow:none;
+  }
+  .grid{
+    display:grid; gap:12px; grid-template-columns:repeat(3,1fr); margin-top:10px;
+  }
+  .note{
+    margin-top:18px; padding:18px; background:#fff7fb; border:1px dashed #ffd0e3; border-radius:16px;
+    font-size:16px; line-height:1.5;
+  }
+  .hidden{display:none}
+  img.preview{max-width:100%; border-radius:16px; margin-top:10px}
+  .tiny{font-size:12px; opacity:.7}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <header>
+    <div class="cat">🐾</div>
+    <div>
+      <h1>Comfort Corner for My Girl</h1>
+      <div class="tiny">Tap start → choose how you feel → instant warm notes (cat edition)</div>
+    </div>
+  </header>
+
+  <main>
+    <!-- START SCREEN -->
+    <section id="start" class="center">
+      <div style="font-size:52px">🐱💖</div>
+      <p>Hi sayang! I made this tiny site just for you. Ready?</p>
+      <button class="btn" id="startBtn">Start</button>
+      <button class="btn ghost" id="musicToggle" aria-pressed="false">Play Music</button>
+      <div class="tiny">Music starts after your tap (phone browsers block autoplay)</div>
+    </section>
+
+    <!-- MENU -->
+    <section id="menu" class="hidden">
+      <div class="center" style="gap:8px">
+        <h2>Pick one:</h2>
+        <div class="grid">
+          <button class="btn" data-choice="leg">🦵 Leg Sore</button>
+          <button class="btn" data-choice="head">🤕 Headache</button>
+          <button class="btn" data-choice="miss">🥹 Miss Me</button>
+        </div>
+        <button class="btn ghost" id="backToStart">← Back</button>
+      </div>
+      <div id="output" class="note hidden"></div>
+    </section>
+  </main>
+</div>
+
+<!-- Audio (replace with your file) -->
+<audio id="bgm" preload="auto" loop>
+  <!-- Put your own MP3 in the repo at /audio/song.mp3 and keep this path -->
+  <source src="audio/song.mp3" type="audio/mpeg" />
+</audio>
+
+<script>
+  // Cute notes (edit the text to your vibe)
+  const NOTES = {
+    leg: "💖 Rest your legs, sayang. Imagine my warm hands massaging gently from calf to ankle. Drink water, elevate a bit, and let me pamper you later. 🐾",
+    head:"🌸 Close your eyes for 60 seconds and breathe with me: in…2…3… out…2…3… I'm sending forehead kisses and a warm towel vibe. You’ve got this. 🐱",
+    miss:`💌 I miss you more than cats love naps. Here's us — my favorite picture. 🐾<br>
+         <img class="preview" src="images/us.jpg" alt="Us together">`
+  };
+
+  const el = (id)=>document.getElementById(id);
+  const start = el('start'), menu = el('menu'), out = el('output');
+  const bgm = el('bgm');
+  const startBtn = el('startBtn');
+  const backBtn = el('backToStart');
+  const musicToggle = el('musicToggle');
+
+  function showMenu(){
+    start.classList.add('hidden');
+    menu.classList.remove('hidden');
+  }
+  function showNote(key){
+    out.innerHTML = NOTES[key] || "Meow?";
+    out.classList.remove('hidden');
+  }
+
+  // Start button → show menu and try to start music
+  startBtn.addEventListener('click', async ()=>{
+    showMenu();
+    try { await bgm.play(); musicToggle.textContent = "Pause Music"; musicToggle.setAttribute('aria-pressed','true'); }
+    catch(e){ /* autoplay blocked; user can press the toggle */ }
+  });
+
+  // Menu choice buttons
+  menu.addEventListener('click', (e)=>{
+    const btn = e.target.closest('button[data-choice]');
+    if(!btn) return;
+    showNote(btn.dataset.choice);
+  });
+
+  // Back
+  backBtn.addEventListener('click', ()=>{
+    menu.classList.add('hidden');
+    out.classList.add('hidden');
+    start.classList.remove('hidden');
+  });
+
+  // Music toggle
+  musicToggle.addEventListener('click', async ()=>{
+    if(bgm.paused){ await bgm.play(); musicToggle.textContent="Pause Music"; musicToggle.setAttribute('aria-pressed','true'); }
+    else { bgm.pause(); musicToggle.textContent="Play Music"; musicToggle.setAttribute('aria-pressed','false'); }
+  });
+</script>
+</body>
+</html>
